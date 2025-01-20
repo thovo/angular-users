@@ -1,0 +1,53 @@
+<div class="user-list w-full flex items-center justify-between p-6 space-x-6 flex-col">
+  @if (isLoadingResults) {
+    <div class="example-loading-shade">
+      @if (isLoadingResults) {
+        <mat-spinner></mat-spinner>
+      }
+    </div>
+  }
+  <mat-form-field class="w-full">
+    <mat-label>Search by first name or last name</mat-label>
+    <input #input (keyup)="search($event)" class="w-full" matInput placeholder="Ex. Mia">
+  </mat-form-field>
+  <div class="w-full m-0">
+    <table [dataSource]="dataSource" mat-table matSort>
+
+      <ng-container matColumnDef="id">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header> ID</th>
+        <td *matCellDef="let row" mat-cell> {{ row.id }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="firstName">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header> First name</th>
+        <td *matCellDef="let row" mat-cell> {{ row.firstName }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="lastName">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header> Last name</th>
+        <td *matCellDef="let row" mat-cell> {{ row.lastName }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="age">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header> Age</th>
+        <td *matCellDef="let row" mat-cell> {{ row.age }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="address">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header> Address</th>
+        <td *matCellDef="let row" mat-cell> {{ row.address.address }} {{ row.address.city }} {{ row.address.country }}
+        </td>
+      </ng-container>
+
+      <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
+      <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
+
+      <!-- Row shown when there is no matching data. -->
+      <tr *matNoDataRow class="mat-row">
+        <td class="mat-cell" colspan="4">No data matching the filter "{{ input.value }}"</td>
+      </tr>
+    </table>
+
+    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
+  </div>
+</div>
