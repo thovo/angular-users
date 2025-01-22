@@ -1,5 +1,4 @@
 import { AfterViewInit, Component, inject, ViewChild } from '@angular/core';
-import { UsersService } from '@services/users.service';
 import { User } from '@models/user.model';
 import {
   MatCell,
@@ -21,6 +20,10 @@ import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { MatList, MatListItem } from '@angular/material/list';
+import { MatIcon } from '@angular/material/icon';
+import { Store } from '@ngrx/store';
+import { loadUsers } from '@store/actions/users.action';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-user-list',
@@ -45,6 +48,7 @@ import { MatList, MatListItem } from '@angular/material/list';
     MatList,
     MatListItem,
     MatSortModule,
+    MatIcon,
   ],
   templateUrl: './user-list.component.html',
   standalone: true,
@@ -52,21 +56,30 @@ import { MatList, MatListItem } from '@angular/material/list';
 })
 export class UserListComponent implements AfterViewInit {
   displayedColumns: string[] = ['id', 'firstName', 'lastName', 'age', 'address'];
-  dataSource!: MatTableDataSource<User>;
+  dataSource = new MatTableDataSource<User>([] as User[]);
   isLoadingResults = true;
   @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
   @ViewChild(MatSort) sort: MatSort | undefined;
-  #userService = inject(UsersService);
+  readonly #store = inject(Store);
+  usersObservable: Observable<User[]> = this.#store.select((state) => state.users.users);
 
   constructor() {
-    this.#userService.getUsers().subscribe((userPagination) => {
-      this.isLoadingResults = false;
-      this.dataSource = new MatTableDataSource(userPagination.users);
-      this.dataSource.filterPredicate = this.filterData;
+    this.#store.dispatch(loadUsers());
+    this.usersObservable.subscribe((users) => {
+      if (users.length) {
+        this.isLoadingResults = false;
+        this.dataSource = new MatTableDataSource(users);
+        this.dataSource.filterPredicate = this.filterData;
+        this.assignPaginatorAndSort();
+      }
     });
   }
 
   ngAfterViewInit(): void {
+    this.assignPaginatorAndSort();
+  }
+
+  assignPaginatorAndSort(): void {
     if (this.paginator && this.sort && this.dataSource) {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;

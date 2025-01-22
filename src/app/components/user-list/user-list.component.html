@@ -1,63 +1,113 @@
-<section class="user-list w-full flex items-center justify-between p-6 space-x-6 flex-col">
-  <h1>User list</h1>
-  <mat-list role="list">
-    <mat-list-item role="listitem">Load users automatically from dummy json</mat-list-item>
-    <mat-list-item role="listitem">Search user by first or last name</mat-list-item>
-    <mat-list-item role="listitem">Sort by first name, last name, and age</mat-list-item>
-    <mat-list-item role="listitem">Pagination</mat-list-item>
-  </mat-list>
-  @if (isLoadingResults) {
-    <div class="example-loading-shade">
-      @if (isLoadingResults) {
-        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+@if (isLoadingResults) {
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+}
+<div class="container m-auto">
+  <section class="user-list w-full flex justify-between p-6 space-x-6 flex-col">
+    <h1 class="text-center font-bold text-2xl uppercase">User list</h1>
+    <h2 class="text-start underline pb-0.5 leading-5 text-green-600">Features already made</h2>
+    <mat-list role="list">
+      <mat-list-item role="listitem">
+        <span class="text-black inline-flex justify-center items-center"
+          >Load users automatically from dummy json <mat-icon color="primary">check</mat-icon></span
+        >
+      </mat-list-item>
+      <mat-list-item role="listitem">
+        <span class="text-black inline-flex justify-center items-center"
+          >Search user by first or last name<mat-icon color="primary">check</mat-icon></span
+        >
+      </mat-list-item>
+      <mat-list-item role="listitem">
+        <span class="text-black inline-flex justify-center items-center"
+          >Sort by first name, last name, and age<mat-icon color="primary">check</mat-icon></span
+        >
+      </mat-list-item>
+      <mat-list-item role="listitem">
+        <span class="text-black inline-flex justify-center items-center"
+          >Pagination<mat-icon color="primary">check</mat-icon></span
+        >
+      </mat-list-item>
+    </mat-list>
+    <h2 class="text-start underline pb-0.5 leading-5 text-red-600">Features in progress</h2>
+    <mat-list role="list">
+      <mat-list-item role="listitem">
+        <span class="text-black inline-flex justify-center items-center"
+          >Implement the features above with API call instead of handling only on FE
+          <mat-icon color="accent">build</mat-icon></span
+        >
+      </mat-list-item>
+      <mat-list-item role="listitem">
+        <span class="text-black inline-flex justify-center items-center"
+          >Implement more actions, and reducers for store with NgRX<mat-icon color="accent"
+            >build</mat-icon
+          ></span
+        >
+      </mat-list-item>
+      <mat-list-item role="listitem">
+        <span class="text-black inline-flex justify-center items-center"
+          >Custom theme with Angular Material and Tailwind
+          <mat-icon color="accent">build</mat-icon></span
+        >
+      </mat-list-item>
+      <mat-list-item role="listitem">
+        <span class="text-black inline-flex justify-center items-center"
+          >Add more tests <mat-icon color="accent">build</mat-icon></span
+        >
+      </mat-list-item>
+    </mat-list>
+
+    <mat-form-field class="w-full rounded">
+      <mat-label>Search by first name or last name</mat-label>
+      <input #input (keyup)="search($event)" class="w-full" matInput placeholder="Ex. Mia" />
+    </mat-form-field>
+    <span class="inline-block my-2">
+      @if (input.value) {
+        You are searching in first name and last name this value: {{ input.value }}
+      } @else {
+        Showing all users
       }
+    </span>
+    <div class="w-full m-0 rounded">
+      <table [dataSource]="dataSource" class="rounded" mat-table matSort>
+        <ng-container matColumnDef="id">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>ID</th>
+          <td *matCellDef="let row" mat-cell>{{ row.id }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="firstName">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>First name</th>
+          <td *matCellDef="let row" mat-cell>{{ row.firstName }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="lastName">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>Last name</th>
+          <td *matCellDef="let row" mat-cell>{{ row.lastName }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="age">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>Age</th>
+          <td *matCellDef="let row" mat-cell>{{ row.age }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="address">
+          <th *matHeaderCellDef mat-header-cell>Address</th>
+          <td *matCellDef="let row" mat-cell>
+            {{ row.address.address }} {{ row.address.city }} {{ row.address.country }}
+          </td>
+        </ng-container>
+
+        <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
+        <tr *matRowDef="let row; columns: displayedColumns" mat-row></tr>
+
+        <!-- Row shown when there is no matching data. -->
+        <tr *matNoDataRow class="mat-row">
+          <td class="mat-cell" colspan="4">No data matching the filter "{{ input.value }}"</td>
+        </tr>
+      </table>
+
+      <mat-paginator
+        [pageSizeOptions]="[5, 10, 25, 100]"
+        aria-label="Select page of users"
+      ></mat-paginator>
     </div>
-  }
-  <mat-form-field class="w-full">
-    <mat-label>Search by first name or last name</mat-label>
-    <input #input (keyup)="search($event)" class="w-full" matInput placeholder="Ex. Mia">
-  </mat-form-field>
-  @if (input.value) {
-    <span>You are searching in first name and last name this value: {{ input.value }}</span>
-  }
-  <div class="w-full m-0">
-    <table [dataSource]="dataSource" mat-table matSort>
-
-      <ng-container matColumnDef="id">
-        <th *matHeaderCellDef mat-header-cell mat-sort-header> ID</th>
-        <td *matCellDef="let row" mat-cell> {{ row.id }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="firstName">
-        <th *matHeaderCellDef mat-header-cell mat-sort-header> First name</th>
-        <td *matCellDef="let row" mat-cell> {{ row.firstName }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="lastName">
-        <th *matHeaderCellDef mat-header-cell mat-sort-header> Last name</th>
-        <td *matCellDef="let row" mat-cell> {{ row.lastName }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="age">
-        <th *matHeaderCellDef mat-header-cell mat-sort-header> Age</th>
-        <td *matCellDef="let row" mat-cell> {{ row.age }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="address">
-        <th *matHeaderCellDef mat-header-cell> Address</th>
-        <td *matCellDef="let row" mat-cell> {{ row.address.address }} {{ row.address.city }} {{ row.address.country }}
-        </td>
-      </ng-container>
-
-      <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
-      <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
-
-      <!-- Row shown when there is no matching data. -->
-      <tr *matNoDataRow class="mat-row">
-        <td class="mat-cell" colspan="4">No data matching the filter "{{ input.value }}"</td>
-      </tr>
-    </table>
-
-    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
-  </div>
-</section>
+  </section>
+</div>

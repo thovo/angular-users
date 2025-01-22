@@ -1,7 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
-import {User} from '@models/user.model';
+import { User } from '@models/user.model';
 import * as UserActions from '@store/actions/users.action';
-
 
 export interface UserState {
   users: User[];
@@ -14,7 +13,7 @@ export const initialState: UserState = {
   users: [],
   loading: false,
   error: null,
-  searchQuery: ''
+  searchQuery: '',
 };
 
 export const userReducer = createReducer(
@@ -24,26 +23,11 @@ export const userReducer = createReducer(
     ...state,
     users,
     loading: false,
-    error: null
+    error: null,
   })),
   on(UserActions.loadUsersError, (state, { error }) => ({
     ...state,
     loading: false,
-    error
+    error,
   })),
-  on(UserActions.sortUsers, (state, { sortBy }) => ({
-    ...state,
-    users: [...state.users].sort((a, b) =>
-      a[sortBy] > b[sortBy] ? 1 : a[sortBy] < b[sortBy] ? -1 : 0
-    )
-  })),
-  on(UserActions.searchUsers, (state, { searchQuery }) => ({
-    ...state,
-    searchQuery,
-    users: state.users.filter(
-      (user) =>
-        user.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.lastName.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-  }))
 );
