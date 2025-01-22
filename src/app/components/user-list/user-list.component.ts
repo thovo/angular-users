@@ -1,8 +1,6 @@
-import { AfterViewInit, Component, inject, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, inject, ViewChild } from '@angular/core';
 import { UsersService } from '@services/users.service';
-import { Observable, of } from 'rxjs';
 import { User } from '@models/user.model';
-import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import {
   MatCell,
   MatCellDef,
@@ -18,14 +16,15 @@ import {
   MatTableDataSource,
 } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
+import { MatProgressBar } from '@angular/material/progress-bar';
+import { MatList, MatListItem } from '@angular/material/list';
 
 @Component({
   selector: 'app-user-list',
   imports: [
-    MatProgressSpinner,
     MatTable,
     MatHeaderCellDef,
     MatHeaderCell,
@@ -42,13 +41,16 @@ import { MatInput } from '@angular/material/input';
     MatFormField,
     MatInput,
     MatLabel,
+    MatProgressBar,
+    MatList,
+    MatListItem,
+    MatSortModule,
   ],
   templateUrl: './user-list.component.html',
   standalone: true,
   styleUrl: './user-list.component.scss',
 })
-export class UserListComponent implements OnInit, AfterViewInit {
-  usersObservable: Observable<User[]> = of([]);
+export class UserListComponent implements AfterViewInit {
   displayedColumns: string[] = ['id', 'firstName', 'lastName', 'age', 'address'];
   dataSource!: MatTableDataSource<User>;
   isLoadingResults = true;
@@ -60,10 +62,9 @@ export class UserListComponent implements OnInit, AfterViewInit {
     this.#userService.getUsers().subscribe((userPagination) => {
       this.isLoadingResults = false;
       this.dataSource = new MatTableDataSource(userPagination.users);
+      this.dataSource.filterPredicate = this.filterData;
     });
   }
-
-  ngOnInit(): void {}
 
   ngAfterViewInit(): void {
     if (this.paginator && this.sort && this.dataSource) {
@@ -79,5 +80,13 @@ export class UserListComponent implements OnInit, AfterViewInit {
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
+  }
+
+  filterData(data: User, filterValue: string): boolean {
+    const trimValue = filterValue.trim().toLowerCase();
+    return (
+      data.firstName.toLowerCase().includes(trimValue) ||
+      data.lastName.toLowerCase().includes(trimValue)
+    );
   }
 }

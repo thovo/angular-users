@@ -1,8 +1,15 @@
-<div class="user-list w-full flex items-center justify-between p-6 space-x-6 flex-col">
+<section class="user-list w-full flex items-center justify-between p-6 space-x-6 flex-col">
+  <h1>User list</h1>
+  <mat-list role="list">
+    <mat-list-item role="listitem">Load users automatically from dummy json</mat-list-item>
+    <mat-list-item role="listitem">Search user by first or last name</mat-list-item>
+    <mat-list-item role="listitem">Sort by first name, last name, and age</mat-list-item>
+    <mat-list-item role="listitem">Pagination</mat-list-item>
+  </mat-list>
   @if (isLoadingResults) {
     <div class="example-loading-shade">
       @if (isLoadingResults) {
-        <mat-spinner></mat-spinner>
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
       }
     </div>
   }
@@ -10,6 +17,9 @@
     <mat-label>Search by first name or last name</mat-label>
     <input #input (keyup)="search($event)" class="w-full" matInput placeholder="Ex. Mia">
   </mat-form-field>
+  @if (input.value) {
+    <span>You are searching in first name and last name this value: {{ input.value }}</span>
+  }
   <div class="w-full m-0">
     <table [dataSource]="dataSource" mat-table matSort>
 
@@ -34,7 +44,7 @@
       </ng-container>
 
       <ng-container matColumnDef="address">
-        <th *matHeaderCellDef mat-header-cell mat-sort-header> Address</th>
+        <th *matHeaderCellDef mat-header-cell> Address</th>
         <td *matCellDef="let row" mat-cell> {{ row.address.address }} {{ row.address.city }} {{ row.address.country }}
         </td>
       </ng-container>
@@ -50,4 +60,4 @@
 
     <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
   </div>
-</div>
+</section>
