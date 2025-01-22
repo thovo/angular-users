@@ -1,6 +1,18 @@
-# AngularUsers
+# Angular Users
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.0.1.
+This project show a table with data come from [dummy users](https://dummyjson.com/docs/users). Features available:
+
+- Load users into MatTable
+- Search user by first name and last name
+- Sort table by first name, last name, and age
+- Pagination
+
+## Stack
+
+- Angular 19
+- Angular Material
+- NgRX
+- Tailwind
 
 ## Development server
 
